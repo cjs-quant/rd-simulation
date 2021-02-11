@@ -20,12 +20,12 @@ ui = pageWithSidebar(
   
   # sidebar panel for inpute
   sidebarPanel(withMathJax(),
-    sliderInput("discontinuity", "Set True Discontinuity (\\(\\beta\\)):", min=-1, max=1, value=0.2, step=0.01),
+    sliderInput("discontinuity", "Set True Discontinuity (\\(\\beta\\)):", min=-1, max=1, value=0.5, step=0.01),
     selectInput("order", "Polynomial Order:", c("1" = 1, "2" = 2, "3" = 3, "4" = 4), selected="1"),
     sliderInput("variance", "Variance of Observations:", min=0.1, max=2, value=0.2, step=0.01),
     sliderInput("n", "# of Observations (draws from normal dist.):", min=100, max=500, value=300),
-    sliderInput("bw_l", "Left Bandwidth:", min=0.1, max=1, value=1),
-    sliderInput("bw_r", "Right Bandwidth:", min=0.1, max=1, value=1),
+    sliderInput("bw_l", "Left Bandwidth", min=0.1, max=1, value=1),
+    sliderInput("bw_r", "Right Bandwidth", min=0.1, max=1, value=1),
     selectInput("kernel", "Kernel Weight:", c("Uniform" = "uniform", "Triangular" = "triangular"), selected="triangular")
   ),
   
@@ -93,7 +93,8 @@ server = function(session, input, output) {
             selected by the user. (2) Outcome data use a 
             data generating process that adds noise to a polynomial fitted over the entire support, with
             a level shift above the cutoff. (3) Control Mean is the intercept of the regression from the 
-            left-hand side polynomial. (4) Standard errors are assumed homoskedastic for exposition.")
+            left-hand side polynomial. (4) Standard errors are assumed homoskedastic for exposition. 
+            (5) Left and Right bandwidths default to IMSE-optimal value.")
   })
   
   # create regression equation
