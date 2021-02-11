@@ -24,8 +24,8 @@ ui = pageWithSidebar(
     selectInput("order", "Polynomial Order:", c("1" = 1, "2" = 2, "3" = 3, "4" = 4), selected="1"),
     sliderInput("variance", "Variance of Observations:", min=0.1, max=2, value=0.2, step=0.01),
     sliderInput("n", "# of Observations (draws from normal dist.):", min=100, max=500, value=300),
-    sliderInput("bw_l", "Left Bandwidth", min=0.1, max=1, value=1),
-    sliderInput("bw_r", "Right Bandwidth", min=0.1, max=1, value=1),
+    sliderInput("bw_l", "Left Bandwidth:", min=0.1, max=1, value=1),
+    sliderInput("bw_r", "Right Bandwidth:", min=0.1, max=1, value=1),
     selectInput("kernel", "Kernel Weight:", c("Uniform" = "uniform", "Triangular" = "triangular"), selected="triangular")
   ),
   
@@ -41,7 +41,7 @@ server = function(session, input, output) {
   draws = reactive({rd_data_gen(input$discontinuity, input$order, input$variance, input$n)})
   
   # find optimal bandwidth
-  bws = reactive({rdbwselect(draws()$y, draws()$x, p=as.numeric(input$order), kernel=input$kernel, bwselect="msetwo")})
+  bws = reactive({rdbwselect(draws()$y, draws()$x, p=as.numeric(input$order), kernel=input$kernel, bwselect="mserd")})
   bw_l = reactive({bws()[["bws"]][1]})
   bw_r = reactive({bws()[["bws"]][2]})
   
@@ -78,6 +78,7 @@ server = function(session, input, output) {
            href="https://deepblue.lib.umich.edu/bitstream/handle/2027.42/109857/ecta1465.pdf?sequence=1")
   chris_email = a("christopher.simard@ny.frb.org,", href="christopher.simard@ny.frb.org")
   paper = a("Haughout, Hyman, and Shachar (2021).", href="https://static1.squarespace.com/static/5acbd8e736099b27ba4cfb36/t/601dbaa6cdba6708377cdc4a/1612561063862/HHS_MLF_Draft_05Feb2021.pdf")
+  github = a("here.", href="https://github.com/csimard-econ/rd-simulation")
   
   # create note
   output$note = renderUI({
@@ -87,12 +88,13 @@ server = function(session, input, output) {
             bandwidth on either side of the cutoff to minimize IMSE, which trades 
             off the estimator's mis-specification or smoothing bias against its variance. 
             Simulation author: Christopher Simard, contact:", chris_email, "originally created for", 
-            paper, "The views expressed here are our own and do not necessarily 
+            paper, "The source code for this simulation can be found", github, 
+            "The views expressed here are our own and do not necessarily 
             represent the views of the Federal Reserve Bank of New York or the Federal Reserve System.",
             tags$br(), tags$br(), "Notes: (1) The true model assumes data generating process is of the order 
-            selected by the user. (2) Outcome data use a 
-            data generating process that adds noise to a polynomial fitted over the entire support, with
-            a level shift above the cutoff. (3) Control Mean is the intercept of the regression from the 
+            selected by the user. (2) Outcome data use a data generating process that adds 
+            noise to a polynomial fitted over the entire support, with a level shift 
+            above the cutoff. (3) Control Mean is the intercept of the regression from the 
             left-hand side polynomial. (4) Standard errors are assumed homoskedastic for exposition. 
             (5) Left and Right bandwidths default to IMSE-optimal value.")
   })

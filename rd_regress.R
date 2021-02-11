@@ -69,14 +69,9 @@ rd_regress = function(data, order, bw_l, bw_r, kernel, discontinuity) {
   colnames(estimate) = c("Discontinuity", "Beta")
   
   # create output table
-  bias = (discontinuity - beta[1])^2
-  variance = sigma2_hat[1,1]
-  imse = bias + variance
-  out_table = cbind(substr(as.character(discontinuity), 1, 4), substr(as.character(beta[1]), 1, 4), round(p, 3), substr(as.character(beta[nrow(beta)]), 1, 4), substr(as.character(bias), 1, 5), substr(as.character(variance), 1, 5), substr(as.character(imse), 1, 5))
-  colnames(out_table) = c("$$\\text{True } \\beta$$", "$$\\text{Estimated } \\hat{\\beta}$$", 
-                          "$$\\text{P-Value}$$", "$$\\text{Control Mean}$$", 
-                          "$$Bias(\\hat{\\beta})^2$$", "$$Variance(\\hat{\\beta})$$", 
-                          "$$\\text{IMSE}$$")
+  out_table = cbind(discontinuity, beta[1], p, beta[nrow(beta)])
+  colnames(out_table) = c("True Discontinuity", "Estimated Discontinuity", 
+                          "P-Value", "Control Mean")
   
   # store coefficients for regression equation
   coeffs = list()
