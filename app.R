@@ -41,7 +41,7 @@ server = function(session, input, output) {
   draws = reactive({rd_data_gen(input$discontinuity, input$order, input$variance, input$n)})
   
   # find optimal bandwidth
-  bws = reactive({rdbwselect(draws()$y, draws()$x, p=as.numeric(input$order), kernel=input$kernel, bwselect="mserd")})
+  bws = reactive({rdbwselect(draws()$y, draws()$x, p=as.numeric(input$order), kernel=input$kernel, bwselect="msetwo")})
   bw_l = reactive({bws()[["bws"]][1]})
   bw_r = reactive({bws()[["bws"]][2]})
   
