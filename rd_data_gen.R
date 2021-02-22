@@ -12,8 +12,8 @@ rd_data_gen = function(discontinuity, order, variance, n) {
   # n: number of random uniform draws over RV
   
   # bounds for RV
-  rv_max = 1
-  rv_min = -1
+  rv_max = 5
+  rv_min = -5
   
   # random uniform x-draws along RV
   x = runif(n, rv_min, rv_max)
