@@ -22,15 +22,15 @@ ui = pageWithSidebar(
   sidebarPanel(withMathJax(),
     sliderInput("discontinuity", "Set True Discontinuity (\\(\\beta\\)):", min=-1, max=1, value=0.5, step=0.01),
     selectInput("order", "Polynomial Order:", c("1" = 1, "2" = 2, "3" = 3, "4" = 4), selected="1"),
-    sliderInput("variance", "Variance of Observations:", min=0.1, max=2, value=0.5, step=0.01),
+    sliderInput("variance", "Variance of Observations:", min=0.1, max=2, value=0.2, step=0.01),
     sliderInput("n", "# of Observations (draws from normal dist.):", min=100, max=500, value=300),
-    sliderInput("bw_l", "Left Bandwidth:", min=0.1, max=5, value=5),
-    sliderInput("bw_r", "Right Bandwidth:", min=0.1, max=5, value=5),
-    selectInput("kernel", "Kernel Weight:", c("Uniform" = "uniform", "Triangular" = "triangular", "Epanechnikov" = "epanechnikov"), selected="triangular")
+    sliderInput("bw_l", "Left Bandwidth:", min=0.1, max=1, value=1),
+    sliderInput("bw_r", "Right Bandwidth:", min=0.1, max=1, value=1),
+    selectInput("kernel", "Kernel Weight:", c("Uniform" = "uniform", "Triangular" = "triangular"), selected="triangular")
   ),
   
   # main panel for outputs
-  mainPanel(uiOutput("equation_l"), uiOutput("equation_r"), plotOutput("rd_plot"), div(withMathJax(tableOutput("reg_tbl")), align="center"), uiOutput("note"))
+  mainPanel(uiOutput("equation"), plotOutput("rd_plot"), div(withMathJax(tableOutput("reg_tbl")), align="center"), uiOutput("note"))
   
 )
 
@@ -67,17 +67,16 @@ server = function(session, input, output) {
       geom_vline(xintercept = 0) + 
       geom_line(mapping = aes(x, y_hat_above, colour = "y_hat"), show.legend = FALSE) + 
       geom_line(mapping = aes(x, y_hat_below, colour = "y_hat"), show.legend = FALSE)
-      # + ggtitle(paste0(title())) + theme(plot.title = element_text(hjust = 0.5))
   })
   
   # create regression table
   output$reg_tbl = renderTable({results()[["out_table"]]}, rownames=FALSE)
   
   # links
-  url = a("Calonico et. al. (2014).", 
-           href="https://deepblue.lib.umich.edu/bitstream/handle/2027.42/109857/ecta1465.pdf?sequence=1")
+  url = a("Calonico et. al. (2019).", 
+           href="https://arxiv.org/pdf/1911.09511.pdf")
   chris_email = a("christopher.simard@ny.frb.org,", href="christopher.simard@ny.frb.org")
-  paper = a("Haughout, Hyman, and Shachar (2021).", href="https://static1.squarespace.com/static/5acbd8e736099b27ba4cfb36/t/601dbaa6cdba6708377cdc4a/1612561063862/HHS_MLF_Draft_05Feb2021.pdf")
+  paper = a("Haughout, Hyman, and Shachar (2021).", href="https://static1.squarespace.com/static/5acbd8e736099b27ba4cfb36/t/603967a13349450838d8a496/1614374818753/HHS_MLF_Draft_25Feb2021.pdf")
   github = a("here.", href="https://github.com/csimard-econ/rd-simulation")
   
   # create note
@@ -99,12 +98,9 @@ server = function(session, input, output) {
             (5) Left and Right bandwidths default to IMSE-optimal value.")
   })
   
-  # create regression equations
-  output$equation_l = renderUI({
-    withMathJax(paste0("$$\\text{Left RD: } Y = ", gsub(",", "", toString(results()$equation_l), fixed=TRUE), " + \\varepsilon$$"))
-  })
-  output$equation_r = renderUI({
-    withMathJax(paste0("$$\\text{Right RD: } Y = ", gsub(",", "", toString(results()$equation_r), fixed=TRUE), " + \\varepsilon$$"))
+  # create regression equation
+  output$equation = renderUI({
+    withMathJax(paste0("$$Y = ", gsub(",", "", toString(results()$equation), fixed=TRUE), " + \\varepsilon$$"))
   })
   
 }

@@ -13,18 +13,17 @@ rd_clean = function(draws, results, order, bw_l, bw_r) {
   # bw_r: right-bandwidth
   
   # plot RD estimate
-  temp = draws[which(draws$x > -1*bw_l & draws$x < bw_r),]
-  
-  # build RD data
-  for (i in 1:order) {
-    temp[paste(colnames(temp[1]),toString(i),sep ="_")] = temp[1]^(i)
-  }
+  draws = draws[which(draws$x > -1*bw_l & draws$x < bw_r),]
   
   # compute predicted y-values
-  temp$y_hat_below = data.matrix(cbind(1, temp[,3:ncol(temp)])) %*% results[["estimate"]][,2]
-  temp$y_hat_above = data.matrix(cbind(1, temp[,3:(ncol(temp)-1)])) %*% results[["estimate"]][,3]
-  temp$y_hat_below[temp$x > 0] = NA
-  temp$y_hat_above[temp$x < 0] = NA
+  y_hat = results[["data"]] %*% results[["estimate"]][,2]
+  
+  # append predicted y-values to draws
+  temp = cbind(draws, y_hat)
+  temp$y_hat_above = NA
+  temp$y_hat_below = NA
+  temp$y_hat_above[which(temp$x >= 0)] = temp$y_hat[which(temp$x >= 0)]
+  temp$y_hat_below[which(temp$x < 0)] = temp$y_hat[which(temp$x < 0)]
   
   return(temp)
   
